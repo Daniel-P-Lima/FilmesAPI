@@ -19,7 +19,12 @@ public class FilmeController : ControllerBase
         _context = context;
         _mapper = mapper;
     }
-
+    /* 
+     <summary>
+        Adiciona um novo filme ao banco de dados.
+        O método recebe um objeto CreateFilmeDto no corpo da requisição,
+    </summary>
+     */
     [HttpPost]
     public IActionResult AdicionaFilme(
         [FromBody] CreateFilmeDto filmeDto)
@@ -46,6 +51,28 @@ public class FilmeController : ControllerBase
             .FirstOrDefault(filme => filme.Id == id);
         if (filme == null) return NotFound();
         return Ok(filme);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult AtualizaFilme(int id, [FromBody] UpdateFilmeDto filmeDto)
+    {
+        var filme = _context.Filmes.FirstOrDefault(
+            filme => filme.Id == id);
+        if (filme == null) return NotFound();
+        _mapper.Map(filmeDto, filme);
+        _context.SaveChanges();
+        return NoContent(); // Atualização bem-sucedida
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeletaFilme(int id)
+    {
+        var filme = _context.Filmes
+           .FirstOrDefault(filme => filme.Id == id);
+        if (filme == null) return NotFound();
+        _context.Remove(filme);
+        _context.SaveChanges();
+        return NoContent(); // Exclusão bem-sucedida
     }
 }
         
